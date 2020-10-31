@@ -9,3 +9,4 @@ export default async () => {
     return processError(err);
   }
 }
+
