@@ -1,0 +1,53 @@
+swagger: "2.0"
+info:
+  version: "1.0"
+  title: product-service
+schemes:
+  - https
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /products:
+    get:
+      summary: Returns all products
+      responses:
+        200:
+          description: success
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Product"
+
+  /products/{productId}:
+    get:
+      summary: Find product by product id
+      parameters:
+        - name: productId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: "#/definitions/Product"
+        404:
+          description: product was not found
+
+
+definitions:
+  Product:
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      count:
+        type: integer
+      price:
+        type: number
+
