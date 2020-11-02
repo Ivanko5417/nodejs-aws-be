@@ -1,4 +1,5 @@
 import { getProductById } from '../handler';
+import { HEADERS } from '../src/utils/response.helper';
 import products from '../src/services/products.json';
 
 describe('getProductsList handler', () => {
@@ -7,6 +8,7 @@ describe('getProductsList handler', () => {
 
     const successfulResponse = {
       statusCode: 200,
+      headers: HEADERS,
       body: JSON.stringify(products[0])
     }
     const event = {
@@ -20,6 +22,7 @@ describe('getProductsList handler', () => {
     const productId = 'wrong id';
     const notFoundResponse = {
       statusCode: 404,
+      headers: HEADERS,
       body: JSON.stringify({ message: `Product with id = [${productId}] was not found` })
     }
     const event = {

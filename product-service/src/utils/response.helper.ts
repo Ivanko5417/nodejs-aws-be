@@ -1,5 +1,11 @@
 import { NotFound } from '../exceptions';
 
+export const HEADERS = {
+    'Access-Control-Allow-Methods': '*',
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+};
+
 export const processError = (error: Error) => {
     let statusCode: number = 500;
     let message: string = 'Internal Server Error';
@@ -10,6 +16,7 @@ export const processError = (error: Error) => {
 
     return {
         statusCode,
+        headers: HEADERS,
         body: JSON.stringify({ message })
     };
 };
@@ -17,6 +24,7 @@ export const processError = (error: Error) => {
 export const processResponse = (data: any) => {
     return {
         statusCode: 200,
+        headers: HEADERS,
         body: JSON.stringify(data)
     };
 };
