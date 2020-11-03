@@ -7,7 +7,7 @@ export default async (event: APIGatewayProxyEventBase<APIGatewayEventDefaultAuth
   try {
     const { id } = event.pathParameters;
 
-    return processResponse(productService.getProductById(id));
+    return processResponse(await productService.getProductById(id));
   } catch (err) {
     return processError(err);
   }

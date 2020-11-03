@@ -4,7 +4,7 @@ import { processError, processResponse } from '../utils/response.helper';
 
 export default async () => {
   try {
-    return processResponse(getProducts());
+    return processResponse(await getProducts());
   } catch (err) {
     return processError(err);
   }
