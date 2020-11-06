@@ -38,3 +38,9 @@ functions:
       - http:
           method: get
           path: /products/{id}
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - http:
+          method: post
+          path: /products
