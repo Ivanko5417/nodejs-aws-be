@@ -7,6 +7,7 @@ export const HEADERS = {
 };
 
 export const processError = (error: Error) => {
+    console.log(error);
     let statusCode: number = 500;
     let message: string = 'Internal Server Error';
     if (error instanceof NotFound) {

@@ -1,5 +1,5 @@
 import 'source-map-support/register';
-import { getProducts } from '../services/product';
+import { getProducts } from '../services/db/product';
 import { processError, processResponse } from '../utils/response.helper';
 
 export default async () => {
