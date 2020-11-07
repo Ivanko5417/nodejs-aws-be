@@ -1,4 +1,4 @@
-import { performQuery, performQueryWithTransaction } from './db';
+import { performQuery, performQueryWithTransaction } from '../db/db';
 import type { Product } from '../../types';
 import { NotFound } from '../../exceptions';
 import { PRODUCTS_TABLE_NAME, STOCKS_TABLE_NAME } from '../../constants';
