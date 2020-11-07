@@ -1,16 +1,30 @@
 import { getProductById } from '../handler';
 import { HEADERS } from '../src/utils/response.helper';
-import products from '../src/services/products.json';
+import * as productService from '../src/services/product/product.service';
+import { Product } from '../src/types';
+import { NotFound } from '../src/exceptions';
 
-describe('getProductsList handler', () => {
+jest.mock('../src/services/product/product.service')
+
+const mockProduct: Product = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  count: 11,
+  price: 12
+}
+
+describe('getProductById handler', () => {
   test('Successful response', async () => {
-    const productId = products[0].id;
+    const productId = mockProduct.id;
 
     const successfulResponse = {
       statusCode: 200,
       headers: HEADERS,
-      body: JSON.stringify(products[0])
+      body: JSON.stringify(mockProduct)
     }
+    // @ts-ignore
+    productService.getProductById.mockReturnValue(mockProduct);
     const event = {
       pathParameters: { id: productId }
     }
@@ -28,6 +42,11 @@ describe('getProductsList handler', () => {
     const event = {
       pathParameters: { id: productId }
     }
+
+    // @ts-ignore
+    productService.getProductById.mockImplementation(() => {
+      throw new NotFound(`Product with id = [${productId}] was not found`);
+    });
 
     // @ts-ignore
     expect(await getProductById(event)).toEqual(notFoundResponse)
