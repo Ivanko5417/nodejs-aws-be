@@ -15,6 +15,7 @@ export async function performQuery<T>(query: QueryConfig | string): Promise<T[]>
   const client = new Client(options)
   await client.connect();
   const result: QueryResult<T> = await client.query<T>(query);
+  await client.end();
   return result.rows;
 }
 
@@ -35,9 +36,11 @@ export async function performQueryWithTransaction(queriesBuilders: (QueryBuilder
       results.push(result);
     }
     await client.query('COMMIT');
+    await client.end();
     return results;
   } catch (err) {
     await client.query('ROLLBACK');
+    await client.end();
     throw err;
   }
 
