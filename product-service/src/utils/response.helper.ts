@@ -1,4 +1,4 @@
-import { NotFound } from '../exceptions';
+import { NotFound, ValidationError } from '../exceptions';
 
 export const HEADERS = {
     'Access-Control-Allow-Methods': '*',
@@ -7,10 +7,16 @@ export const HEADERS = {
 };
 
 export const processError = (error: Error) => {
+    console.log(error);
     let statusCode: number = 500;
     let message: string = 'Internal Server Error';
     if (error instanceof NotFound) {
         statusCode = 404;
+        message = error.message;
+    }
+
+    if (error instanceof ValidationError) {
+        statusCode = 400;
         message = error.message;
     }
 

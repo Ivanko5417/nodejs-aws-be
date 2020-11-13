@@ -14,12 +14,13 @@ custom:
 plugins:
   - serverless-webpack
   - serverless-offline
-
+  - serverless-dotenv-plugin
 provider:
   name: aws
   runtime: nodejs12.x
   profile: rsAppAccount
   region: eu-west-1
+  endpointType: regional
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
@@ -38,3 +39,10 @@ functions:
       - http:
           method: get
           path: /products/{id}
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - http:
+          method: post
+          path: /products
+          cors: true
