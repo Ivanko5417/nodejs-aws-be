@@ -12,3 +12,10 @@ export function getSignedUrl(key) {
     ContentType: 'text/csv'
   });
 }
+
+export function getReadableStream(key) {
+  return s3.getObject({
+    Bucket: config.s3.bucketName,
+    Key: key,
+  }).createReadStream();
+}

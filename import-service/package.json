@@ -6,6 +6,7 @@
     "dev": "sls offline start"
   },
   "dependencies": {
+    "csv-parser": "^2.3.3",
     "ts-loader": "^8.0.11"
   },
   "devDependencies": {
