@@ -3,3 +3,5 @@ export const REQUIRED_ENV_VARIABLES = [
 ];
 
 export const REGION = 'us-east-1';
+export const S3_UPLOADED_FOLDER = 'uploaded';
+export const S3_PARSED_FOLDER = 'parsed';
