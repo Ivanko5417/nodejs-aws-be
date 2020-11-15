@@ -6,6 +6,7 @@ service:
 frameworkVersion: '2'
 
 custom:
+  bucket: rs-app-import-service
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -25,14 +26,27 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    S3_BUCKET_NAME: ${self:custom.bucket}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::${self:custom.bucket}"
+    - Effect: Allow
+      Action:
+        - "s3:*"
+      Resource:
+        - "arn:aws:s3:::${self:custom.bucket}/*"
 
 functions:
-  getProductsList:
+  importProductsFile:
     handler: handler.importProductsFile
     events:
       - http:
           method: get
           path: /import
+          cors: true
           request:
             parameters:
               querystrings:
