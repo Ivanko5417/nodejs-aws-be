@@ -25,6 +25,20 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "sqs:ReceiveMessage"
+      Resource:
+        - Fn::GetAtt:
+            - productsQueue
+            - Arn
+resources:
+  Resources:
+    productsQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "products-queue"
 
 functions:
   getProductsList:
@@ -46,3 +60,12 @@ functions:
           method: post
           path: /products
           cors: true
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt:
+              - productsQueue
+              - Arn
