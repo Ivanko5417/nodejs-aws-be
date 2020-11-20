@@ -1,0 +1,29 @@
+{
+  "name": "import-service",
+  "description": "",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "sls offline start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "csv-parser": "^2.3.3",
+    "ts-loader": "^8.0.11"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.64",
+    "@types/node": "^14.14.7",
+    "@types/serverless": "^1.78.9",
+    "aws-sdk": "^2.792.0",
+    "fork-ts-checker-webpack-plugin": "^6.0.2",
+    "jest": "^26.6.3",
+    "serverless": "^2.9.0",
+    "serverless-dotenv-plugin": "^3.1.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-webpack": "^5.3.5",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.0.5",
+    "webpack": "^4.29.0",
+    "webpack-node-externals": "^2.5.2"
+  }
+}
