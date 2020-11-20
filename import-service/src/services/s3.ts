@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk';
-import { REGION, S3_UPLOADED_FOLDER } from '../constants';
+import { S3_UPLOADED_FOLDER } from '../constants';
 import { config } from '../config';
 
-const s3 = new AWS.S3({ region: REGION });
+const s3 = new AWS.S3({ region: config.aws.region });
 
 const defaultOptions = {
   Bucket: config.s3.bucketName

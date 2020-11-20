@@ -2,6 +2,7 @@ import { S3CreateEvent } from 'aws-lambda';
 import 'source-map-support/register';
 import { processError, processResponse } from '../utils/response.helper';
 import { getReadableStream, moveObject } from '../services/s3';
+import { sendMessage } from '../services/sqs';
 import { parseFile } from '../services/fileParser';
 import { S3_PARSED_FOLDER } from '../constants';
 
@@ -9,7 +10,7 @@ export default async (event: S3CreateEvent) => {
   try {
     await Promise.all(event.Records.map(async (record) => {
       const { object: { key } } = record.s3;
-      await parseFile(getReadableStream(key));
+      await parseFile(getReadableStream(key), sendMessage);
       await moveObject(key, S3_PARSED_FOLDER);
     }))
 

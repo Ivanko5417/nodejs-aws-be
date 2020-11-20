@@ -13,6 +13,13 @@ export const validateConfig = () => {
 };
 
 export const config = {
+  aws: {
+    region: process.env.REGION,
+    accountNumber: process.env.AWS_ACCOUNT_NUMBER
+  },
+  sqs: {
+    queueName: process.env.SQS_QUEUE_NAME
+  },
   s3: {
     bucketName: process.env.S3_BUCKET_NAME
   }
