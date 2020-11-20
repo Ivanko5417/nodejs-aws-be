@@ -13,6 +13,12 @@ export const validateConfig = () => {
 };
 
 export const config = {
+  aws: {
+    region: process.env.REGION
+  },
+  sns: {
+    topic: process.env.SNS_TOPIC
+  },
   db: {
     host: process.env.DB_HOST,
     port: +process.env.DB_PORT,

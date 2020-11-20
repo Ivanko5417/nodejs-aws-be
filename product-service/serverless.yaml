@@ -6,6 +6,8 @@ service:
 frameworkVersion: '2'
 
 custom:
+  AWSRegion: eu-west-1
+  email: "v.drobysh2011@gmail.com"
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -19,12 +21,14 @@ provider:
   name: aws
   runtime: nodejs12.x
   profile: rsAppAccount
-  region: eu-west-1
+  region: ${self:custom.AWSRegion}
   endpointType: regional
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    SNS_TOPIC: !Ref createProductTopic
+    REGION: ${self:custom.AWSRegion}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -33,12 +37,10 @@ provider:
         - Fn::GetAtt:
             - productsQueue
             - Arn
-resources:
-  Resources:
-    productsQueue:
-      Type: "AWS::SQS::Queue"
-      Properties:
-        QueueName: "products-queue"
+    - Effect: Allow
+      Action:
+        - "sns:Publish"
+      Resource: !Ref createProductTopic
 
 functions:
   getProductsList:
@@ -69,3 +71,17 @@ functions:
             Fn::GetAtt:
               - productsQueue
               - Arn
+
+resources:
+  Resources:
+    productsQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "products-queue"
+    createProductTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        TopicName: createProductTopic
+        Subscription:
+          - Protocol: email
+            Endpoint: ${self:custom.email}
