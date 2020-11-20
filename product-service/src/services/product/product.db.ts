@@ -2,6 +2,7 @@ import { performQuery, performQueryWithTransaction } from '../db/db';
 import type { Product } from '../../types';
 import { NotFound } from '../../exceptions';
 import { PRODUCTS_TABLE_NAME, STOCKS_TABLE_NAME } from '../../constants';
+import { ProductToSave } from '../../types';
 
 const productFields = ['id', 'title', 'description', 'price', 'count'];
 
@@ -24,7 +25,7 @@ export async function getProductById(id: string): Promise<Product> {
 }
 
 // export async function createProduct(productToCreate: Product): Promise<Product> {
-export async function createProduct(productToCreate: Product) {
+export async function createProduct(productToCreate: ProductToSave) {
   const productQuery = {
     text: `INSERT INTO
         ${PRODUCTS_TABLE_NAME}(title, description, price)
