@@ -74,6 +74,14 @@ functions:
               - Arn
 
 resources:
+  Outputs:
+    SQSQueueName:
+      Export:
+        Name: queueName
+      Value:
+        Fn::GetAtt:
+          - productsQueue
+          - QueueName
   Resources:
     productsQueue:
       Type: "AWS::SQS::Queue"
