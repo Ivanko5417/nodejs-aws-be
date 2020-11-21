@@ -26,7 +26,13 @@ export default async (event: SQSEvent) => {
       }
     }))
 
-    await publish(`Products were parsed. Result: ${JSON.stringify(createdProducts)}`);
+    const isAllSuccessful = +createdProducts.every(product => product);
+    await publish(`Products were parsed. Result: ${JSON.stringify(createdProducts)}`, {
+      isAllSuccessful: {
+        DataType: 'Number',
+        StringValue: `${isAllSuccessful}`
+      }
+    });
 
     return processResponse(createdProducts.map(product => product));
   } catch (err) {

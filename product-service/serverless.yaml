@@ -7,7 +7,8 @@ frameworkVersion: '2'
 
 custom:
   AWSRegion: eu-west-1
-  email: "v.drobysh2011@gmail.com"
+  mainEmail: "v.drobysh2011@gmail.com"
+  reservedEmail: "v.drobysh2011+1@gmail.com"
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -82,6 +83,17 @@ resources:
       Type: "AWS::SNS::Topic"
       Properties:
         TopicName: createProductTopic
-        Subscription:
-          - Protocol: email
-            Endpoint: ${self:custom.email}
+    mainEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn: !Ref createProductTopic
+        Protocol: email
+        Endpoint: ${self:custom.mainEmail}
+        FilterPolicy: '{"isAllSuccessful":[1]}'
+    reservedEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn: !Ref createProductTopic
+        Protocol: email
+        Endpoint: ${self:custom.reservedEmail}
+        FilterPolicy: '{"isAllSuccessful":[0]}'
