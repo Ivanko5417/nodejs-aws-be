@@ -1,12 +1,13 @@
 import 'source-map-support/register';
+import { SQSEvent } from 'aws-lambda';
 import { processError, processResponse } from '../utils/response.helper';
 import * as productService from '../services/product/product.service';
-import { SQSEvent } from 'aws-lambda';
 import { ProductToSave, SQSProduct } from '../types';
 import { publish } from '../services/sns';
 
 export default async (event: SQSEvent) => {
-  const mappedProducts: ProductToSave[] = event.Records
+  try {
+    const mappedProducts: ProductToSave[] = event.Records
     .map(record => {
       const item: SQSProduct = JSON.parse(record.body);
       return {
@@ -16,18 +17,17 @@ export default async (event: SQSEvent) => {
         price: +item.price,
       };
     });
-  const createdProducts = await Promise.all(mappedProducts.map(async (product) => {
-    try {
-      return await productService.createProduct(product);
-    } catch (err) {
-      console.error(`Error during saving product: [${product}]: `, err);
-      return null;
-    }
-  }))
+    const createdProducts = await Promise.all(mappedProducts.map(async (product) => {
+      try {
+        return await productService.createProduct(product);
+      } catch (err) {
+        console.error(`Error during saving product: [${product}]: `, err);
+        return null;
+      }
+    }))
 
-  await publish(`Products were parsed. Result: ${JSON.stringify(createdProducts)}`);
+    await publish(`Products were parsed. Result: ${JSON.stringify(createdProducts)}`);
 
-  try {
     return processResponse(createdProducts.map(product => product));
   } catch (err) {
     return processError(err);
