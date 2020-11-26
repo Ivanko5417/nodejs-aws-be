@@ -6,6 +6,9 @@ service:
 frameworkVersion: '2'
 
 custom:
+  AWSRegion: eu-west-1
+  mainEmail: "v.drobysh2011@gmail.com"
+  reservedEmail: "v.drobysh2011+1@gmail.com"
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -19,12 +22,26 @@ provider:
   name: aws
   runtime: nodejs12.x
   profile: rsAppAccount
-  region: eu-west-1
+  region: ${self:custom.AWSRegion}
   endpointType: regional
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    SNS_TOPIC: !Ref createProductTopic
+    REGION: ${self:custom.AWSRegion}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "sqs:ReceiveMessage"
+      Resource:
+        - Fn::GetAtt:
+            - productsQueue
+            - Arn
+    - Effect: Allow
+      Action:
+        - "sns:Publish"
+      Resource: !Ref createProductTopic
 
 functions:
   getProductsList:
@@ -46,3 +63,45 @@ functions:
           method: post
           path: /products
           cors: true
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt:
+              - productsQueue
+              - Arn
+
+resources:
+  Outputs:
+    SQSQueueName:
+      Export:
+        Name: queueName
+      Value:
+        Fn::GetAtt:
+          - productsQueue
+          - QueueName
+  Resources:
+    productsQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "products-queue"
+    createProductTopic:
+      Type: "AWS::SNS::Topic"
+      Properties:
+        TopicName: createProductTopic
+    mainEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn: !Ref createProductTopic
+        Protocol: email
+        Endpoint: ${self:custom.mainEmail}
+        FilterPolicy: '{"isAllSuccessful":[1]}'
+    reservedEmailSubscription:
+      Type: "AWS::SNS::Subscription"
+      Properties:
+        TopicArn: !Ref createProductTopic
+        Protocol: email
+        Endpoint: ${self:custom.reservedEmail}
+        FilterPolicy: '{"isAllSuccessful":[0]}'

@@ -7,6 +7,8 @@ frameworkVersion: '2'
 
 custom:
   bucket: rs-app-import-service
+  AWSRegion: eu-west-1
+  sqsQueueName: ${cf:product-service-dev.SQSQueueName}
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -20,14 +22,22 @@ provider:
   name: aws
   runtime: nodejs12.x
   profile: rsAppAccount
-  region: eu-west-1
+  region: ${self:custom.AWSRegion}
   endpointType: regional
   apiGateway:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     S3_BUCKET_NAME: ${self:custom.bucket}
+    SQS_QUEUE_NAME: ${self:custom.sqsQueueName}
+    REGION: ${self:custom.AWSRegion}
+    AWS_ACCOUNT_NUMBER: !Ref AWS::AccountId
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+      Resource:
+        - Fn::Sub: "arn:aws:sqs:${self:custom.AWSRegion}:${AWS::AccountId}:${self:custom.sqsQueueName}"
     - Effect: Allow
       Action:
         - "s3:*"

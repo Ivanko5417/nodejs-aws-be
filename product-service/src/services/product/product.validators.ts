@@ -1,5 +1,5 @@
 import * as Joi from '@hapi/joi';
-import { Product } from '../../types';
+import { ProductToSave } from '../../types';
 import { ValidationError } from '../../exceptions';
 
 const productSchema = Joi.object().keys({
@@ -9,7 +9,7 @@ const productSchema = Joi.object().keys({
   count: Joi.number().integer().min(1).required()
 });
 
-export function validateProduct(product: Product) {
+export function validateProduct(product: ProductToSave) {
   const { error, value } = productSchema.validate(product);
   if (error) {
     throw new ValidationError(error.message);

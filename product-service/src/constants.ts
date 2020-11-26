@@ -3,7 +3,8 @@ export const REQUIRED_ENV_VARIABLES = [
   'DB_PORT',
   'DB_DATABASE',
   'DB_USERNAME',
-  'DB_PASSWORD'
+  'DB_PASSWORD',
+  'REGION'
 ];
 
 export const CONNECTION_TIMEOUT_MS = 5000;
