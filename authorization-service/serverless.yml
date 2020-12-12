@@ -1,0 +1,28 @@
+service:
+  name: authorization-service
+
+frameworkVersion: '2'
+
+custom:
+  AWSRegion: eu-west-1
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: rsAppAccount
+  region: ${self:custom.AWSRegion}
+  environment:
+    Ivanko5417: ${env:Ivanko5417}
+
+functions:
+  basicAuthorizer:
+    handler: handler.basicAuthorizer
+
+

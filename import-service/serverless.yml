@@ -9,6 +9,7 @@ custom:
   bucket: rs-app-import-service
   AWSRegion: eu-west-1
   sqsQueueName: ${cf:product-service-dev.SQSQueueName}
+  basicAuthorizerName: authorization-service-${opt:stage, 'dev'}-basicAuthorizer
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -57,6 +58,12 @@ functions:
           method: get
           path: /import
           cors: true
+          authorizer:
+            name: basicAuthorizer
+            type: token
+            resultTtlInSeconds: 0
+            IdentitySource: method.request.header.Authorization
+            arn: !Sub "arn:aws:lambda:${self:custom.AWSRegion}:${AWS::AccountId}:function:authorization-service-dev-basicAuthorizer"
           request:
             parameters:
               querystrings:
@@ -70,3 +77,14 @@ functions:
           rules:
             - prefix: uploaded/
           existing: true
+resources:
+  Resources:
+    GatewayResponse4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
