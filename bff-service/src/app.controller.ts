@@ -5,10 +5,12 @@ import {
   HttpStatus,
   HttpException,
   HttpService,
-  Req
+  Req, Inject, CACHE_MANAGER
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
 import { Request } from 'express';
 import { Method } from 'axios';
+import { CACHE_URLS, CACHE_TTL } from './constants';
 
 
 @Controller()
@@ -16,7 +18,7 @@ export class AppController {
   services: {
     [key: string]: string
   }
-  constructor(private httpService: HttpService) {
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache, private httpService: HttpService) {
     this.services = {
       cart: process.env.CART_SERVICE_URL,
       product: process.env.PRODUCT_SERVICE_URL,
@@ -30,6 +32,14 @@ export class AppController {
       throw new HttpException(  'Cannot process request', HttpStatus.BAD_GATEWAY)
     }
     const { method, body, originalUrl } = req;
+    const isCacheable = CACHE_URLS.includes(originalUrl);
+    if (isCacheable) {
+      const cachedResponse = await this.cacheManager.get(originalUrl);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+    }
+
     const recipientURL = originalUrl.split('/').slice(2).join('/');
 
     try {
@@ -38,6 +48,9 @@ export class AppController {
         method: method as Method,
         data: body,
       }).toPromise();
+      if (isCacheable) {
+        await this.cacheManager.set(originalUrl, data, CACHE_TTL);
+      }
       return data;
     } catch (err) {
       if (err.isAxiosError) {
